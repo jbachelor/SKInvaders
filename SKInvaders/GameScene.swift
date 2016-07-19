@@ -33,6 +33,9 @@ class GameScene: SKScene {
     let kInvaderGridSpacing = CGSize(width: 12, height: 12)
     let kInvaderRowCount = 6
     let kInvaderColCount = 6
+    
+    let kShipSize = CGSize(width: 30, height: 16)
+    let kShipName = "ship"
   
   // Object Lifecycle Management
   
@@ -47,11 +50,8 @@ class GameScene: SKScene {
   
   func createContent() {
     
-//    let invader = SKSpriteNode(imageNamed: "InvaderA_00.png")
-//    invader.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
-//    self.addChild(invader)
-    
     setupInvaders()
+    setupShip()
     self.backgroundColor = SKColor.blackColor()
   }
     
@@ -104,9 +104,23 @@ class GameScene: SKScene {
             }
         }
     }
+    
+    
+    func setupShip() {
+        let ship = makeShip()
+        ship.position = CGPoint(x: size.width / 2.0, y: kShipSize.height / 2.0)
+        addChild(ship)
+    }
+    
+    
+    func makeShip() -> SKNode {
+        let ship = SKSpriteNode(color: SKColor.greenColor(), size: kShipSize)
+        ship.name = kShipName
+        return ship
+    }
+    
   
   // Scene Update
-  
   override func update(currentTime: CFTimeInterval) {
     /* Called before each frame is rendered */
   }
