@@ -177,6 +177,8 @@ class GameScene: SKScene {
         
         logFn(file: #file, function: #function, message: currentTime.debugDescription)
         
+        determineInvaderMovementDirection()
+        
         enumerateChildNodesWithName(InvaderType.name) { node, stop in
             switch self.invaderMovementDirection {
             case .Right:
@@ -207,7 +209,37 @@ class GameScene: SKScene {
   
   // Scene Update Helpers
   
-  // Invader Movement Helpers
+  // MARK: Invader Movement Helpers
+    func determineInvaderMovementDirection() {
+        var proposedMovementDirection: InvaderMovementDirection = invaderMovementDirection
+        
+        enumerateChildNodesWithName(InvaderType.name) { node, stop in
+            switch self.invaderMovementDirection {
+            case .Right:
+                if (CGRectGetMaxX(node.frame) >= node.scene!.size.width - 1.0) {
+                    proposedMovementDirection = .DownThenLeft
+                    stop.memory = true
+                }
+            case .Left:
+                if (CGRectGetMinX(node.frame) <= 1.0) {
+                    proposedMovementDirection = .DownThenRight
+                    stop.memory = true
+                }
+            case .DownThenLeft:
+                proposedMovementDirection = .Left
+                stop.memory = true
+            case .DownThenRight:
+                proposedMovementDirection = .Right
+                stop.memory = true
+            default:
+                break
+            }
+        }
+        
+        if (proposedMovementDirection != invaderMovementDirection) {
+            invaderMovementDirection = proposedMovementDirection
+        }
+    }
   
   // Bullet Helpers
   
