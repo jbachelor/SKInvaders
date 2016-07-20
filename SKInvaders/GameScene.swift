@@ -15,7 +15,15 @@ class GameScene: SKScene {
   
   var contentCreated = false
     
-    enum InvaderType {
+    enum InvaderMovementDirection: String {
+        case Right
+        case Left
+        case DownThenRight
+        case DownThenLeft
+        case None
+    }
+    
+    enum InvaderType: String {
         case A
         case B
         case C
@@ -44,7 +52,7 @@ class GameScene: SKScene {
   
   // Scene Setup and Content Creation
   override func didMoveToView(view: SKView) {
-    logFn(file: #file, function: #function)
+    logFn(file: #file, function: #function, message: view.debugDescription)
     
     if (!self.contentCreated) {
       self.createContent()
@@ -65,7 +73,7 @@ class GameScene: SKScene {
     
     
     func makeInvaderOfType(invaderType: InvaderType) -> SKNode {
-        logFn(file: #file, function: #function)
+        logFn(file: #file, function: #function, message: invaderType.rawValue)
         var invaderColor: SKColor
         
         switch invaderType {
@@ -161,6 +169,8 @@ class GameScene: SKScene {
   // Scene Update
   override func update(currentTime: CFTimeInterval) {
     /* Called before each frame is rendered */
+//    logFn(file: #file, function: #function)
+    
     
   }
   
