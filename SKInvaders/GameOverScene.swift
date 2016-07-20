@@ -20,6 +20,7 @@ class GameOverScene: SKScene {
     // Scene Setup and Content Creation
     
     override func didMoveToView(view: SKView) {
+        logFn(file: #file, function: #function)
         
         if (!self.contentCreated) {
             self.createContent()
@@ -28,6 +29,7 @@ class GameOverScene: SKScene {
     }
     
     func createContent() {
+        logFn(file: #file, function: #function)
         
         let gameOverLabel = SKLabelNode(fontNamed: "Courier")
         gameOverLabel.fontSize = 50
@@ -53,18 +55,19 @@ class GameOverScene: SKScene {
 
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-        
+        logFn(file: #file, function: #function)
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?)  {
-        
+        logFn(file: #file, function: #function)
     }
 
     override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
-        
+        logFn(file: #file, function: #function)
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?)  {
+        logFn(file: #file, function: #function)
         
         let gameScene = GameScene(size: self.size)
         gameScene.scaleMode = .AspectFill

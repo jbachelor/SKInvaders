@@ -33,6 +33,7 @@
 		CDF07A171975453100FFAB46 /* Ship.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF07A041975453100FFAB46 /* Ship.png */; };
 		CDF07A181975453100FFAB46 /* Ship@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF07A051975453100FFAB46 /* Ship@2x.png */; };
 		CDF07A1A1975510100FFAB46 /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF07A191975510100FFAB46 /* GameOverScene.swift */; };
+		F364F4B41D3FBF8D00B42CC9 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F364F4B31D3FBF8D00B42CC9 /* Utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,7 @@
 		CDF07A041975453100FFAB46 /* Ship.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Ship.png; sourceTree = "<group>"; };
 		CDF07A051975453100FFAB46 /* Ship@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Ship@2x.png"; sourceTree = "<group>"; };
 		CDF07A191975510100FFAB46 /* GameOverScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
+		F364F4B31D3FBF8D00B42CC9 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +122,7 @@
 				CDF079F01975453100FFAB46 /* Assets */,
 				CDF079CF1975428800FFAB46 /* AppDelegate.swift */,
 				CDF079D31975428800FFAB46 /* GameScene.swift */,
+				F364F4B31D3FBF8D00B42CC9 /* Utils.swift */,
 				CDF079D51975428800FFAB46 /* GameViewController.swift */,
 				CDF07A191975510100FFAB46 /* GameOverScene.swift */,
 				CDF079D71975428800FFAB46 /* Main.storyboard */,
@@ -316,6 +319,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F364F4B41D3FBF8D00B42CC9 /* Utils.swift in Sources */,
 				CDF079D41975428800FFAB46 /* GameScene.swift in Sources */,
 				CDF079D61975428800FFAB46 /* GameViewController.swift in Sources */,
 				CDF07A1A1975510100FFAB46 /* GameOverScene.swift in Sources */,

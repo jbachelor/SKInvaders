@@ -12,6 +12,7 @@ import SpriteKit
 class GameViewController: UIViewController {
   
   override func viewDidLoad() {
+    logFn(file: #file, function: #function)
     super.viewDidLoad()
     
     // Configure the view.
@@ -42,18 +43,21 @@ class GameViewController: UIViewController {
   }
   
   override func didReceiveMemoryWarning() {
+    logFn(file: #file, function: #function)
     super.didReceiveMemoryWarning()
     // Release any cached data, images, etc that aren't in use.
   }
   
   
   func handleApplicationWillResignActive (note: NSNotification) {
+    logFn(file: #file, function: #function)
     
     let skView = self.view as! SKView
     skView.paused = true
   }
   
   func handleApplicationDidBecomeActive (note: NSNotification) {
+    logFn(file: #file, function: #function)
     
     let skView = self.view as! SKView
     skView.paused = false

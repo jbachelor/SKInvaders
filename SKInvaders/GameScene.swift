@@ -44,6 +44,7 @@ class GameScene: SKScene {
   
   // Scene Setup and Content Creation
   override func didMoveToView(view: SKView) {
+    logFn(file: #file, function: #function)
     
     if (!self.contentCreated) {
       self.createContent()
@@ -53,6 +54,7 @@ class GameScene: SKScene {
   
     
   func createContent() {
+    logFn(file: #file, function: #function)
     
     setupInvaders()
     setupShip()
@@ -63,6 +65,7 @@ class GameScene: SKScene {
     
     
     func makeInvaderOfType(invaderType: InvaderType) -> SKNode {
+        logFn(file: #file, function: #function)
         var invaderColor: SKColor
         
         switch invaderType {
@@ -82,6 +85,7 @@ class GameScene: SKScene {
     
     
     func setupInvaders() {
+        logFn(file: #file, function: #function)
         let baseOrigin = CGPoint(x: size.width/3, y: size.height/2)
         
         for row in 0..<kInvaderRowCount {
@@ -113,6 +117,7 @@ class GameScene: SKScene {
     
     
     func setupShip() {
+        logFn(file: #file, function: #function)
         let ship = makeShip()
         ship.position = CGPoint(x: size.width / 2.0, y: kShipSize.height / 2.0)
         addChild(ship)
@@ -120,6 +125,7 @@ class GameScene: SKScene {
     
     
     func makeShip() -> SKNode {
+        logFn(file: #file, function: #function)
         let ship = SKSpriteNode(color: SKColor.greenColor(), size: kShipSize)
         ship.name = kShipName
         return ship
@@ -127,6 +133,7 @@ class GameScene: SKScene {
     
     
     func setupHud() {
+        logFn(file: #file, function: #function)
         let scoreLabel = SKLabelNode(fontNamed: "Courier")
         scoreLabel.name = kScoreHudName
         scoreLabel.fontSize = 25
@@ -154,6 +161,7 @@ class GameScene: SKScene {
   // Scene Update
   override func update(currentTime: CFTimeInterval) {
     /* Called before each frame is rendered */
+    
   }
   
   
@@ -172,3 +180,33 @@ class GameScene: SKScene {
   // Game End Helpers
   
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
