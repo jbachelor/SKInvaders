@@ -14,6 +14,9 @@ class GameScene: SKScene {
   // Private GameScene Properties
   
   var contentCreated = false
+    var invaderMovementDirection: InvaderMovementDirection = .Right
+    var timeOfLastMove: CFTimeInterval = 0.0
+    var timePerMove: CFTimeInterval = 1.0
     
     enum InvaderMovementDirection: String {
         case Right
@@ -167,12 +170,39 @@ class GameScene: SKScene {
     
   
   // Scene Update
+    func moveInvadersForUpdate(currentTime: CFTimeInterval) {
+        if (currentTime - timeOfLastMove < timePerMove) {
+            return
+        }
+        
+        logFn(file: #file, function: #function, message: currentTime.debugDescription)
+        
+        enumerateChildNodesWithName(InvaderType.name) { node, stop in
+            switch self.invaderMovementDirection {
+            case .Right:
+                node.position = CGPointMake(node.position.x + 10, node.position.y)
+            case .Left:
+                node.position = CGPointMake(node.position.x - 10, node.position.y)
+            case .DownThenLeft, .DownThenRight:
+                node.position = CGPointMake(node.position.x, node.position.y - 10)
+            case .None:
+                break
+            }
+            
+            self.timeOfLastMove = currentTime
+        }
+    }
+    
+    
   override func update(currentTime: CFTimeInterval) {
     /* Called before each frame is rendered */
 //    logFn(file: #file, function: #function)
-    
+    moveInvadersForUpdate(currentTime)
     
   }
+    
+    
+    
   
   
   // Scene Update Helpers
