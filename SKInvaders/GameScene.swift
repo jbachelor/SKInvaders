@@ -68,6 +68,8 @@ class GameScene: SKScene {
   func createContent() {
     logFn(file: #file, function: #function)
     
+    physicsBody = SKPhysicsBody(edgeLoopFromRect: frame)
+    
     setupInvaders()
     setupShip()
     setupHud()
@@ -140,6 +142,11 @@ class GameScene: SKScene {
         logFn(file: #file, function: #function)
         let ship = SKSpriteNode(color: SKColor.greenColor(), size: kShipSize)
         ship.name = kShipName
+        ship.physicsBody = SKPhysicsBody(rectangleOfSize: ship.frame.size)
+        ship.physicsBody!.dynamic = true
+        ship.physicsBody!.affectedByGravity = false
+        ship.physicsBody!.mass = 0.02
+        
         return ship
     }
     
@@ -201,7 +208,7 @@ class GameScene: SKScene {
         if let ship = childNodeWithName(kShipName) as? SKSpriteNode {
             if let data = motionManager.accelerometerData {
                 if fabs(data.acceleration.x) > 0.2 {
-                    logFn(file: #file, function: #function, message: "Acceleration: \(data.acceleration.x)")
+                    ship.physicsBody!.applyForce(CGVectorMake(40.0 * CGFloat(data.acceleration.x), 0))
                 }
             }
         }
