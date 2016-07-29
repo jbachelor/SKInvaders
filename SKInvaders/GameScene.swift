@@ -247,6 +247,7 @@ class GameScene: SKScene {
     processUserTapsForUpdate(currentTime)
     processUserMotionForUpdate(currentTime)
     moveInvadersForUpdate(currentTime)
+    fireInvaderBulletsForUpdate(currentTime)
   }
     
     
@@ -255,13 +256,35 @@ class GameScene: SKScene {
   
   // MARK:  Scene Update Helpers
     func processUserTapsForUpdate(currentTime: CFTimeInterval) {
-//        logFn(file: #file, function: #function, message: "[\(currentTime)]")
-        
         for tapCount in tapQueue {
             if tapCount == 1 {
                 fireShipBullets()
             }
             tapQueue.removeAtIndex(0)
+        }
+    }
+    
+    
+    func fireInvaderBulletsForUpdate(currentTime: CFTimeInterval) {
+        let existingBullet = childNodeWithName(kInvaderFiredBulletName)
+        if existingBullet == nil {
+            var allInvaders = Array<SKNode>()
+            enumerateChildNodesWithName(InvaderType.name) {
+                node, stop in
+                allInvaders.append(node)
+            }
+            
+            if allInvaders.count > 0 {
+                let allInvadersIndex = Int(arc4random_uniform(UInt32(allInvaders.count)))
+                let invader = allInvaders[allInvadersIndex]
+                let bullet = makeBulletOfType(.InvaderFired)
+                
+                bullet.position =  CGPoint(x: invader.position.x, y: invader.position.y - invader.frame.size.height/2 + bullet.frame.size.height/2)
+                
+                let bulletDestination = CGPoint(x: invader.position.x, y: -(bullet.frame.size.height/2))
+                
+                fireBullet(bullet, toDestination: bulletDestination, withDuration: 1.0, andSoundFileName: "InvaderBullet.wav")
+            }
         }
     }
   
