@@ -11,9 +11,9 @@ import CoreMotion
 
 class GameScene: SKScene {
   
-  // Private GameScene Properties
-  
-  var contentCreated = false
+    let motionManager: CMMotionManager = CMMotionManager()
+    
+    var contentCreated = false
     var invaderMovementDirection: InvaderMovementDirection = .Right
     var timeOfLastMove: CFTimeInterval = 0.0
     var timePerMove: CFTimeInterval = 1.0
@@ -60,6 +60,7 @@ class GameScene: SKScene {
     if (!self.contentCreated) {
       self.createContent()
       self.contentCreated = true
+        motionManager.startAccelerometerUpdates()
     }
   }
   
@@ -196,11 +197,21 @@ class GameScene: SKScene {
     }
     
     
+    func processUserMotionForUpdate(currentTime: CFTimeInterval) {
+        if let ship = childNodeWithName(kShipName) as? SKSpriteNode {
+            if let data = motionManager.accelerometerData {
+                if fabs(data.acceleration.x) > 0.2 {
+                    logFn(file: #file, function: #function, message: "Acceleration: \(data.acceleration.x)")
+                }
+            }
+        }
+    }
+    
+    
   override func update(currentTime: CFTimeInterval) {
     /* Called before each frame is rendered */
-//    logFn(file: #file, function: #function)
+    processUserMotionForUpdate(currentTime)
     moveInvadersForUpdate(currentTime)
-    
   }
     
     
