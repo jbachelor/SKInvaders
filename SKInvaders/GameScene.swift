@@ -11,14 +11,14 @@ import CoreMotion
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    let motionManager: CMMotionManager = CMMotionManager()
-    
     var contentCreated = false
     var invaderMovementDirection: InvaderMovementDirection = .Right
     var timeOfLastMove: CFTimeInterval = 0.0
     var timePerMove: CFTimeInterval = 1.0
     var tapQueue = [Int]()
     var contactQueue = [SKPhysicsContact]()
+    var score: Int = 0
+    var shipHealth: Float = 1.0
     
     enum InvaderMovementDirection: String {
         case Right
@@ -47,6 +47,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         case InvaderFired
     }
     
+    let motionManager: CMMotionManager = CMMotionManager()
     
     let kInvaderGridSpacing = CGSize(width: 12, height: 12)
     let kInvaderRowCount = 6
@@ -68,7 +69,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let kScoreHudName = "scoreHud"
     let kHealthHudName = "healthHud"
     
+    
+    
+    
     // Object Lifecycle Management
+    
+    
     
     // MARK:  Scene Setup and Content Creation
     override func didMoveToView(view: SKView) {
@@ -198,12 +204,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         healthLabel.name = kHealthHudName
         healthLabel.fontSize = 25
         healthLabel.fontColor = SKColor.redColor()
-        healthLabel.text = String(format: "Health:  %.1f%%", 100.0)
+        healthLabel.text = String(format: "Health:  %.1f%%", shipHealth * 100.0)
         healthLabel.position = CGPoint(
             x: frame.size.width/2,
             y: size.height - (80 + healthLabel.frame.size.height/2))
         
         addChild(healthLabel)
+    }
+    
+    
+    func adjustScoreBy(points: Int) {
+        score += points
+        
+        if let score = childNodeWithName(kScoreHudName)asdfadsfsadf
     }
     
     
@@ -238,13 +251,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    // Scene Update
+    // MARK: Scene Update
     func moveInvadersForUpdate(currentTime: CFTimeInterval) {
         if (currentTime - timeOfLastMove < timePerMove) {
             return
         }
-        
-//        logFn(file: #file, function: #function, message: currentTime.debugDescription)
         
         determineInvaderMovementDirection()
         
@@ -266,10 +277,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     func processUserMotionForUpdate(currentTime: CFTimeInterval) {
+        // TODO: Work with physics of player ship... It's too slow and laggy!
         if let ship = childNodeWithName(kShipName) as? SKSpriteNode {
             if let data = motionManager.accelerometerData {
-                if fabs(data.acceleration.x) > 0.00001 {
-                    ship.physicsBody!.applyForce(CGVectorMake(80.0 * CGFloat(data.acceleration.x), 0))
+                if true || fabs(data.acceleration.x) > 0.2 {
+                    ship.physicsBody!.applyForce(CGVectorMake(40 * CGFloat(data.acceleration.x), 0))
                 }
             }
         }
@@ -289,7 +301,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     
-    // MARK:  Scene Update Helpers
+    // MARK: Scene Update Helpers
     func processUserTapsForUpdate(currentTime: CFTimeInterval) {
         for tapCount in tapQueue {
             if tapCount == 1 {
