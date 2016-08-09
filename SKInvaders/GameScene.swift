@@ -11,6 +11,7 @@ import CoreMotion
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    // MARK:  Fields
     var contentCreated = false
     var invaderMovementDirection: InvaderMovementDirection = .Right
     var timeOfLastMove: CFTimeInterval = 0.0
@@ -18,8 +19,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var tapQueue = [Int]()
     var contactQueue = [SKPhysicsContact]()
     var score: Int = 0
-    var shipHealth: Float = 1.0
+    var shipHealth: Int = 100
     
+    // MARK: enums
     enum InvaderMovementDirection: String {
         case Right
         case Left
@@ -47,6 +49,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         case InvaderFired
     }
     
+    // MARK: Constants
     let motionManager: CMMotionManager = CMMotionManager()
     
     let kInvaderGridSpacing = CGSize(width: 12, height: 12)
@@ -58,7 +61,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let kShipCategory: UInt32 = 0x1 << 2
     let kSceneEdgeCategory: UInt32 = 0x1 << 3
     let kInvaderFiredBulletCategory: UInt32 = 0x1 << 4
-    let kInvaderBulletDamage: Float = -0.20
+    let kInvaderBulletDamage = -20
     
     let kShipSize = CGSize(width: 30, height: 16)
     let kShipName = "ship"
@@ -78,6 +81,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     // MARK:  Scene Setup and Content Creation
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     override func didMoveToView(view: SKView) {
         logFn(file: #file, function: #function, message: view.debugDescription)
         
@@ -90,7 +96,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func createContent() {
         logFn(file: #file, function: #function)
         
@@ -105,7 +113,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func loadInvaderTexturesOfType(invaderType: InvaderType) -> [SKTexture] {
         logFn(file: #file, function: #function, message: "[\(invaderType.rawValue)]")
         
@@ -126,7 +134,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return invaderTexture
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func makeInvaderOfType(invaderType: InvaderType) -> SKNode {
         logFn(file: #file, function: #function, message: invaderType.rawValue)
         
@@ -145,7 +153,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return invader
     }
 
-
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func setupInvaders() {
         logFn(file: #file, function: #function)
         let baseOrigin = CGPoint(x: size.width/3, y: size.height/2)
@@ -178,6 +186,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func setupShip() {
         logFn(file: #file, function: #function)
         let ship = makeShip()
@@ -185,16 +194,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(ship)
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func makeShip() -> SKNode {
         logFn(file: #file, function: #function)
-        let ship = SKSpriteNode(color: SKColor.greenColor(), size: kShipSize)
+        let ship = SKSpriteNode(imageNamed: "Ship.png")
         ship.name = kShipName
+        
         ship.physicsBody = SKPhysicsBody(rectangleOfSize: ship.frame.size)
         ship.physicsBody!.dynamic = true
         ship.physicsBody!.affectedByGravity = false
         ship.physicsBody!.mass = 0.02
-        
         ship.physicsBody!.categoryBitMask = kShipCategory
         ship.physicsBody!.contactTestBitMask = 0x0
         ship.physicsBody!.collisionBitMask = kSceneEdgeCategory
@@ -202,7 +211,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return ship
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func setupHud() {
         logFn(file: #file, function: #function)
         let scoreLabel = SKLabelNode(fontNamed: "Courier")
@@ -220,7 +229,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         healthLabel.name = kHealthHudName
         healthLabel.fontSize = 25
         healthLabel.fontColor = SKColor.redColor()
-        healthLabel.text = String(format: "Health:  %.1f%%", shipHealth * 100.0)
+        healthLabel.text = "Health:  \(shipHealth)%"
         healthLabel.position = CGPoint(
             x: frame.size.width/2,
             y: size.height - (80 + healthLabel.frame.size.height/2))
@@ -228,7 +237,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(healthLabel)
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func adjustScoreBy(points: Int) {
         let newScore = score + points
         logFn(file: #file, function: #function, message: "Score just changed from [\(score)] to [\(newScore)].")
@@ -240,25 +249,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func adjustShipHealthBy(healthAdjustment: Float) {
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    func adjustShipHealthBy(healthAdjustment: Int) {
         let newShipHealth = max(shipHealth + healthAdjustment, 0)
         
         logFn(file: #file, function: #function, message: "Health just changed from [\(shipHealth)] to [\(newShipHealth)].")
-        
-        if newShipHealth <= 0.0 {
-            logFn(file: #file, function: #function, message: "That's it... You're dead!.")
+
+        shipHealth = newShipHealth
+
+        if shipHealth <= 0 {
+            logFn(file: #file, function: #function, message: "That's it... You're dead!")
         }
         
-        shipHealth = newShipHealth
         
         if let health = childNodeWithName(kHealthHudName) as? SKLabelNode {
-            health.text = String(format: "Health: %.1f%%", self.shipHealth * 100)
+            health.text = "Health: \(shipHealth)%"
         } else {
             logFn(file: #file, function: #function, message: "ERROR:  childNodeWithName(kHealthHudName) as? SKLabelNode came back nil.")
         }
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func makeBulletOfType(bulletType: BulletType) -> SKNode {
 //        logFn(file: #file, function: #function, message: "Bullet type:  \(bulletType)")
         
@@ -291,6 +302,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     // MARK: Scene Update
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func moveInvadersForUpdate(currentTime: CFTimeInterval) {
         if (currentTime - timeOfLastMove < timePerMove) {
             return
@@ -314,7 +326,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func processUserMotionForUpdate(currentTime: CFTimeInterval) {
         // TODO: Work with physics of player ship... It's too slow and laggy!
         if let ship = childNodeWithName(kShipName) as? SKSpriteNode {
@@ -326,7 +338,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
         processContactsForUpdate(currentTime)
@@ -341,6 +353,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     // MARK: Scene Update Helpers
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func processUserTapsForUpdate(currentTime: CFTimeInterval) {
         for tapCount in tapQueue {
             if tapCount == 1 {
@@ -351,7 +364,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func fireInvaderBulletsForUpdate(currentTime: CFTimeInterval) {
         
         let existingBullet = childNodeWithName(kInvaderFiredBulletName)
@@ -377,7 +390,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func processContactsForUpdate(currentTime: CFTimeInterval) {
         for contact in contactQueue {
             handleContact(contact)
@@ -390,6 +403,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     // MARK: Invader Movement Helpers
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func determineInvaderMovementDirection() {
         var proposedMovementDirection: InvaderMovementDirection = invaderMovementDirection
         
@@ -422,6 +436,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // MARK:  Bullet Helpers
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func fireBullet(bullet: SKNode, toDestination destination: CGPoint, withDuration duration: CFTimeInterval, andSoundFileName soundName: String) {
 //        logFn(file: #file, function: #function, message: "Firing!")
         let bulletAction = SKAction.sequence([SKAction.moveTo(destination, duration: duration), SKAction.waitForDuration(3.0/60.0), SKAction.removeFromParent()])
@@ -431,7 +446,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(bullet)
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func fireShipBullets() {
         
         let existingBullet = childNodeWithName(kShipFiredBulletName)
@@ -450,6 +465,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     // MARK:  User Tap Helpers
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         
         if let touch = touches.first {
@@ -464,12 +480,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     // MARK:  Physics Contact Helpers
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func didBeginContact(contact: SKPhysicsContact) {
         logFn(file: #file, function: #function)
         contactQueue.append(contact)
     }
     
-    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func handleContact(contact: SKPhysicsContact) {
         logFn(file: #file, function: #function)
         // Ensure you haven't already handled this contact and removed its nodes
@@ -484,7 +501,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             logFn(file: #file, function: #function, message: "Oh noes!! Your ship just got f#cked up!")
             runAction(SKAction.playSoundFileNamed("ShipHit.wav", waitForCompletion: false))
             adjustShipHealthBy(kInvaderBulletDamage)
-            if shipHealth <= 0.0 {
+            if shipHealth <= 0 {
                 contact.bodyA.node!.removeFromParent()
                 contact.bodyB.node!.removeFromParent()
             } else {
