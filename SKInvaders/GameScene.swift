@@ -58,6 +58,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let kShipCategory: UInt32 = 0x1 << 2
     let kSceneEdgeCategory: UInt32 = 0x1 << 3
     let kInvaderFiredBulletCategory: UInt32 = 0x1 << 4
+    let kInvaderBulletDamage: Float = -0.20
     
     let kShipSize = CGSize(width: 30, height: 16)
     let kShipName = "ship"
@@ -214,9 +215,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     func adjustScoreBy(points: Int) {
-        score += points
+        let newScore = score + points
+        logFn(file: #file, function: #function, message: "Score just changed from [\(score)] to [\(newScore)].")
         
-        if let score = childNodeWithName(kScoreHudName)asdfadsfsadf
+        score = newScore
+        
+        if let score = childNodeWithName(kScoreHudName) as? SKLabelNode {
+            score.text = String(format: "Score: %04u", self.score)
+        }
+    }
+    
+    func adjustShipHealthBy(healthAdjustment: Float) {
+        let newShipHealth = max(shipHealth + healthAdjustment, 0)
+        
+        logFn(file: #file, function: #function, message: "Health just changed from [\(shipHealth)] to [\(newShipHealth)].")
+        
+        if newShipHealth <= 0.0 {
+            logFn(file: #file, function: #function, message: "That's it... You're dead!.")
+        }
+        
+        shipHealth = newShipHealth
+        
+        if let health = childNodeWithName(kHealthHudName) as? SKLabelNode {
+            health.text = String(format: "Health: %.1f%%", self.shipHealth * 100)
+        } else {
+            logFn(file: #file, function: #function, message: "ERROR:  childNodeWithName(kHealthHudName) as? SKLabelNode came back nil.")
+        }
     }
     
     
@@ -442,13 +466,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let nodeNames = [contact.bodyA.node!.name!, contact.bodyB.node!.name!]
         
         if nodeNames.contains(kShipName) && nodeNames.contains(kInvaderFiredBulletName) {
-            self.runAction(SKAction.playSoundFileNamed("ShipHit.wav", waitForCompletion: false))
-            contact.bodyA.node!.removeFromParent()
-            contact.bodyB.node!.removeFromParent()
+            logFn(file: #file, function: #function, message: "Oh noes!! Your ship just got f#cked up!")
+            runAction(SKAction.playSoundFileNamed("ShipHit.wav", waitForCompletion: false))
+            adjustShipHealthBy(kInvaderBulletDamage)
+            if shipHealth <= 0.0 {
+                contact.bodyA.node!.removeFromParent()
+                contact.bodyB.node!.removeFromParent()
+            } else {
+                if let ship = self.childNodeWithName(kShipName) {
+                    ship.alpha = CGFloat(shipHealth)
+                    
+                    if contact.bodyA.node == ship {
+                        contact.bodyB.node!.removeFromParent()
+                    } else {
+                        contact.bodyA.node!.removeFromParent()
+                    }
+                }
+            }
         } else if nodeNames.contains(InvaderType.name) && nodeNames.contains(kShipFiredBulletName) {
+            logFn(file: #file, function: #function, message: "w00000t!! Invader destroyed!")
             self.runAction(SKAction.playSoundFileNamed("InvaderHit.wav", waitForCompletion: false))
             contact.bodyA.node!.removeFromParent()
             contact.bodyB.node!.removeFromParent()
+            adjustScoreBy(100)
         }
     }
     
