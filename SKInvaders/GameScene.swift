@@ -105,22 +105,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    func makeInvaderOfType(invaderType: InvaderType) -> SKNode {
-        logFn(file: #file, function: #function, message: invaderType.rawValue)
-        var invaderColor: SKColor
+    
+    func loadInvaderTexturesOfType(invaderType: InvaderType) -> [SKTexture] {
+        logFn(file: #file, function: #function, message: "[\(invaderType.rawValue)]")
         
-        switch invaderType {
+        var prefix: String
+        
+        switch (invaderType) {
         case .A:
-            invaderColor = SKColor.redColor()
+            prefix = "InvaderA"
         case .B:
-            invaderColor = SKColor.greenColor()
+            prefix = "InvaderB"
         case .C:
-            invaderColor = SKColor.blueColor()
+            prefix = "InvaderC"
         }
         
-        let invader = SKSpriteNode(color: invaderColor, size: InvaderType.size)
-        invader.name = InvaderType.name
+        let invaderTexture = [SKTexture(imageNamed: String(format: "%@_00.png", prefix)),
+                SKTexture(imageNamed: String(format: "%@_01.png", prefix))]
         
+        return invaderTexture
+    }
+    
+    
+    func makeInvaderOfType(invaderType: InvaderType) -> SKNode {
+        logFn(file: #file, function: #function, message: invaderType.rawValue)
+        
+        let invaderTextures = loadInvaderTexturesOfType(invaderType)
+        let invader = SKSpriteNode(texture: invaderTextures[0])
+        invader.name = InvaderType.name
+        invader.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(invaderTextures, timePerFrame: timePerMove)))
+
+        // invaders' bitmask setup
         invader.physicsBody = SKPhysicsBody(rectangleOfSize: invader.frame.size)
         invader.physicsBody!.dynamic = false
         invader.physicsBody!.categoryBitMask = kInvaderCategory
@@ -129,8 +144,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         return invader
     }
-    
-    
+
+
     func setupInvaders() {
         logFn(file: #file, function: #function)
         let baseOrigin = CGPoint(x: size.width/3, y: size.height/2)
