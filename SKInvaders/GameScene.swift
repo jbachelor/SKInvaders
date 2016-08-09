@@ -20,6 +20,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var contactQueue = [SKPhysicsContact]()
     var score: Int = 0
     var shipHealth: Int = 100
+    var gameEnding = false
     
     // MARK: enums
     enum InvaderMovementDirection: String {
@@ -53,6 +54,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let motionManager: CMMotionManager = CMMotionManager()
     
     let kInvaderGridSpacing = CGSize(width: 12, height: 12)
+    let kMinInvaderBottomHeight: Float = 32.0
     let kInvaderRowCount = 6
     let kInvaderColCount = 6
     
@@ -341,6 +343,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
+        if isGameOver() {
+            endGame()
+        }
+        
         processContactsForUpdate(currentTime)
         processUserTapsForUpdate(currentTime)
         processUserMotionForUpdate(currentTime)
@@ -525,8 +531,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     
-    // Game End Helpers
     
+    
+    // Game End Helpers
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    func isGameOver() -> Bool {
+        let invader = childNodeWithName(InvaderType.name)
+        var invaderTooLow = false
+        
+        enumerateChildNodesWithName(InvaderType.name) {
+            node, stop in
+            
+            if (Float(CGRectGetMinY(node.frame)) <= self.kMinInvaderBottomHeight) {
+                invaderTooLow = true
+                stop.memory = true
+            }
+        }
+        
+        let ship = childNodeWithName(kShipName)
+        
+        return invader == nil || invaderTooLow || ship == nil
+    }
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    func endGame() {
+        if !gameEnding {
+            gameEnding = true
+            motionManager.startAccelerometerUpdates()
+            
+            let gameOverScene: GameOverScene = GameOverScene(size: size)
+            view?.presentScene(gameOverScene, transition: SKTransition.doorsOpenHorizontalWithDuration(1.0))
+        }
+    }
 }
 
 
