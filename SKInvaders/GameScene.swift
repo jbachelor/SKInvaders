@@ -506,7 +506,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 contact.bodyB.node!.removeFromParent()
             } else {
                 if let ship = self.childNodeWithName(kShipName) {
-                    ship.alpha = CGFloat(shipHealth)
+                    ship.alpha = CGFloat(shipHealth)/100.0
                     
                     if contact.bodyA.node == ship {
                         contact.bodyB.node!.removeFromParent()
