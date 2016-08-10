@@ -329,6 +329,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    func adjustInvaderMovementToTimePerMove(newTimePerMove: CFTimeInterval) {
+        if newTimePerMove <= 0 {
+            return
+        }
+        
+        let ratio: CGFloat = CGFloat(timePerMove/newTimePerMove)
+        timePerMove = newTimePerMove
+        
+        enumerateChildNodesWithName(InvaderType.name) {
+            node, stop in
+            node.speed = node.speed * ratio
+        }
+    }
+    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func processUserMotionForUpdate(currentTime: CFTimeInterval) {
         // TODO: Work with physics of player ship... It's too slow and laggy!
         if let ship = childNodeWithName(kShipName) as? SKSpriteNode {
@@ -418,11 +433,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             case .Right:
                 if (CGRectGetMaxX(node.frame) >= node.scene!.size.width - 1.0) {
                     proposedMovementDirection = .DownThenLeft
+                    self.adjustInvaderMovementToTimePerMove(self.timePerMove * 0.8)
                     stop.memory = true
                 }
             case .Left:
                 if (CGRectGetMinX(node.frame) <= 1.0) {
                     proposedMovementDirection = .DownThenRight
+                    self.adjustInvaderMovementToTimePerMove(self.timePerMove * 0.8)
                     stop.memory = true
                 }
             case .DownThenLeft:
@@ -438,6 +455,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if (proposedMovementDirection != invaderMovementDirection) {
             invaderMovementDirection = proposedMovementDirection
+            logFn(file: #file, function: #function, message: "Invaders changing direction:  [\(invaderMovementDirection)]")
         }
     }
     
